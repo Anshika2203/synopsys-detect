@@ -1,13 +1,19 @@
-FROM plugins/base:windows-ltsc2022-amd64
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
 USER ContainerAdministrator
 
-ENV GODEBUG=netdns=go
+SHELL ["powershell", "-Command"]
 
-ADD scripts/download_detect.ps1 C:/download_detect.ps1
+RUN Invoke-WebRequest -Uri 'https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.20.1+1/OpenJDK11U-jre_x64_windows_hotspot_11.0.20.1_1.zip' -OutFile 'openjdk11.zip'; `
+    Expand-Archive -Path 'openjdk11.zip' -DestinationPath 'C:\openjdk'; `
+    Remove-Item -Force 'openjdk11.zip'
 
-RUN powershell -File C:/download_detect.ps1
+RUN setx /M PATH "%PATH%;C:\openjdk\jdk-11.0.20.1+1\bin"
 
-ADD release/windows/amd64/synopsys-detect.exe C:/synopsys-detect.exe
+COPY scripts/download_detect.ps1 C:/opt/
 
-ENTRYPOINT ["C:\\synopsys-detect.exe"]
+RUN powershell -ExecutionPolicy Bypass -File C:/opt/download_detect.ps1
+
+COPY release/windows/amd64/synopsys-detect.exe C:/bin/
+
+ENTRYPOINT ["C:/bin/synopsys-detect.exe"]

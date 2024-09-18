@@ -1,10 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
-# Set the source URL for the Synopsys Detect JAR file
-DETECT_SOURCE=https://sig-repo.synopsys.com/artifactory/bds-integrations-release/com/synopsys/integration/synopsys-detect/9.7.0/synopsys-detect-9.7.0.jar
+DETECT_SOURCE=https://detect.synopsys.com/detect9.sh
 
-# Create the directory if it doesn't exist
 mkdir -p /opt/jar
 
-# Download the JAR file
-curl -L -o /opt/jar/synopsys-detect-9.7.0.jar --progress-bar "${DETECT_SOURCE}"
+# Download and run the official Synopsys Detect script
+curl -s -L /opt/jar/synopsys-detect.jar --progress-bar "${DETECT_SOURCE}" | bash
